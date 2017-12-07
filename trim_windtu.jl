@@ -4,6 +4,7 @@ function uisol(uitmp,θ7,θlat,θlon)  # 均匀入流求解力和力矩的流程
   # 用于雅可比矩阵中求平均周期力
   ψxx = 0.0
   iter = 1
+  ncir = 2 # 精度控制系数，ncir越大，圈数越多，理论上精度越高
   sumf = 0.0
   blat = 0.0
   blon = 0.0
@@ -16,7 +17,7 @@ function uisol(uitmp,θ7,θlat,θlon)  # 均匀入流求解力和力矩的流程
     end
   end
 
-  while iter<=npsi
+  while iter<=ncir*npsi
     vind_r = uitmp[1]
     vall_r = uitmp[2]
     beta = uitmp[4]
@@ -45,19 +46,20 @@ function uisol(uitmp,θ7,θlat,θlon)  # 均匀入流求解力和力矩的流程
     ψxx = ψxx+dψ
     iter = iter+1
   end
-  sumf = sumf/npsi
-  blat = blat/npsi
-  blon = blon/npsi
+  sumf = sumf/ncir/npsi
+  blat = blat/ncir/npsi
+  blon = blon/ncir/npsi
 
   return sumf,blat,blon
 end
 
 function yagb(uitmp,θcp,θlat,θlon,epsi=1/180*pi)
-  # 前向差分雅可比矩阵
+  # 前向差分雅可比矩阵（待完成）
 
-  # 后向差分的雅可比矩阵
+  # 后向差分的雅可比矩阵（待完成）
 
   # 中心差分雅可比矩阵
+  # ===总距中心差分===
   thecp = θcp+epsi/2
   uisoltmp = uisol(uitmp,thecp,θlat,θlon)
   rotfor = uisoltmp[1]
@@ -73,7 +75,9 @@ function yagb(uitmp,θcp,θlat,θlon,epsi=1/180*pi)
   dthecp = (rotfor-rotbac)/epsi
   dtheblat = (blatfor-blatbac)/epsi
   dtheblon = (blonfor-blonbac)/epsi
+  # ===总距在中心差分完成===
 
+  # ===横向周期变距中心差分===
   lat = θlat+epsi/2
   uisoltmp = uisol(uitmp,θcp,lat,θlon)
   rotfor = uisoltmp[1]
@@ -89,7 +93,9 @@ function yagb(uitmp,θcp,θlat,θlon,epsi=1/180*pi)
   dlat = (rotfor-rotbac)/epsi
   dlatblat = (blatfor-blatbac)/epsi
   dlatblon = (blonfor-blonbac)/epsi
+  # ===横向周期变距中心差分完成===
 
+  # ===纵向周期变距中心差分===
   lon = θlon+epsi/2
   uisoltmp = uisol(uitmp,θcp,θlat,lon)
   rotfor = uisoltmp[1]
@@ -105,22 +111,22 @@ function yagb(uitmp,θcp,θlat,θlon,epsi=1/180*pi)
   dlon = (rotfor-rotbac)/epsi
   dlonblat = (blatfor-blatbac)/epsi
   dlonblon = (blonfor-blonbac)/epsi
+  # ===纵向周期变距差分完成===
 
+  # ===Jacobi矩阵生成===
   Myg = [dthecp  dlat  dlon;
           dtheblat  dlatblat  dlatblon;
           dtheblon  dlonblat  dlonblon]
+  # ===Jacobi矩阵生成完成===
 
   return Myg
 end
 
 
-function trimwt(uitmp,rot,beta_lat,beta_lon,θcp,θlat,θlon,epsi=1/180*π) # 纵横向挥舞配平法
-  fzt = abs(rot-T) # 力的配平条件
-  epsi = 1/180*π # 雅可比求解的变化小量
-  # 求解雅可比矩阵
-  # 输入量：θ0,θ_lat,θ_lon
-  # 输出量：rot,beta_lat,beta_lon
-
+function trimwt(uitmp,rot,beta_lat,beta_lon,
+                θcp,θlat,θlon,epsi=1/180*π)
+# 纵横向挥舞配平法
+  fzt = abs(rot-T) # 计算力与需用力之差
   if fzt<10&&abs(beta_lat)<1e-3&&abs(beta_lon)<1e-3 # 配平力和挥舞
   # if abs(beta_lat)<1e-3&abs(beta_lon)<1e-3 # 仅配平挥舞
     return true,θ0,θlat,θlon,θcp

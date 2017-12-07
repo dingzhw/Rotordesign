@@ -35,7 +35,7 @@ blat = 0.0
 blon = 0.0
 uitmp = uniforminflow(ψ,θcp,θlat,θlon,betanow,betaxnow)
 
-while index<=60*npsi # 如果计算了100圈还没收敛就结束计算
+while index<=100*npsi # 如果计算了100圈还没收敛就结束计算
   vind_r = uitmp[1]
   vall_r = uitmp[2]
   beta = uitmp[4]
@@ -67,7 +67,7 @@ while index<=60*npsi # 如果计算了100圈还没收敛就结束计算
   # print("$(α_aero/π*180)\n")
   # print("\n")
   # The file calculate the uniform induced velocity
-  uitmp = uniforminflow(ψ,θcp,θlat,θlon,beta,dbeta,0.0)
+  uitmp = uniforminflow(ψ,θcp,θlat,θlon,beta,dbeta,Mbeta_aero)
 
   ψ = ψ+dψ
 
