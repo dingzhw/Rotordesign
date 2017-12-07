@@ -1,37 +1,5 @@
 #This file is the Free-Wake code
 
-function rigidwake(λ,filename)
-  pointfile = open(filename,"w")
-  write(pointfile,"  TITLE = 'RIGID WAKE OF ROTOR'\n")
-  ktip = 0.88 #Default Tip Vortex ScrollUp Position
-  # dt = dψ/Ω
-  Nrw = Int64(2.0*π/dψ)
-  rwps = Array{Vector}(Nrw,Nb,NR)
-  rbp = Array{Float64}(NR,Nb)
-  ζ0 = Array{Float64}(Nrw,Nb,NR)
-  # Rtip = Array{Float64}(NR)
-  for k in 1:NR
-    # Rtip[k] = ktip*R
-    for j in 1:Nb
-      write(pointfile,"  VARIABLES = 'X','Y','Z'\n")
-      write(pointfile,"  ZONE I = $(Nrw)\tF = POINT\n")
-      rbp[k,j] = ecut+R/Nb*(j-1)
-      for i in 1:Nrw
-        ψ = (i-1)*dψ
-        ψk = ψ+(k-1)*2*π/NR
-        ζ0[i,j,k] = -ψ
-        rwps[i,j,k] = [rbp[k,j]*cos(ψk)+μ*R*ψk;
-                      -rbp[k,j]*sin(ψk);
-                      λ*R*ψ]
-        write(pointfile,
-              "\t$(rwps[i,j,k][1])\t$(rwps[i,j,k][2])\t$(rwps[i,j,k][3])\n")
-      end
-    end
-  end
-  close(pointfile)
-  return rwps,ζ0
-end
-
 function Gama(Cl,V∞,chord)
   gama = abs(0.5*Cl*V∞*chord)
   return gama
@@ -144,7 +112,7 @@ function freewake(wp0,Nwp,ψ,ζ0,Cl,v_all)
   return wp,gama_wp
 end
 
-function wpgen(ψ,ζ0,wp,Nwp)  #new wakepoints generate
+function wpgen(ψ,ζ0,wp,Nwp)  # new wakepoints generate
   l = 1
   if norm(ψ)<=1e-3
     return wp,ζ0
@@ -170,7 +138,7 @@ function wpgen(ψ,ζ0,wp,Nwp)  #new wakepoints generate
   end
 end
 
-function vbe(ψ,ζ0,gama_wp,wp) #calculate velocity of blade elemnts(both sys and ro coordinations)
+function vbe(ψ,ζ0,gama_wp,wp) # calculate velocity of blade elemnts(both sys and ro coordinations)
   bp = Array{Vector}(NR,Nb+1)
   for k in 1:NR
     ψk = ψ+2*π/NR*(k-1)
