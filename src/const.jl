@@ -44,17 +44,17 @@ const R = parse(Float64,pacons[7])
 const ecut = parse(Float64,pacons[8])
 const m_ = parse(Float64,pacons[9])
 const Ω = parse(Float64,pacons[10])
-const αs = parse(Float64,pacons[11])
+const αs = parse(Float64,pacons[11])/180*π
 const Kβ = parse(Float64,pacons[12])
 const vair = parse(Float64,pacons[13])
 const T = parse(Float64,pacons[14])
 const dpsideg = parse(Float64,pacons[15])
-const βang0 = parse(Float64,pacons[16])
-const dβ0 = parse(Float64,pacons[17])
-const θ7 = parse(Float64,pacons[18])
-const θtw = parse(Float64,pacons[19])
-const thelat = parse(Float64,pacons[20])
-const thelon = parse(Float64,pacons[21])
+const βang0 = parse(Float64,pacons[16])/180*π
+const dβ0 = parse(Float64,pacons[17])/180*π
+const θ7 = parse(Float64,pacons[18])/180*π
+const θtw = parse(Float64,pacons[19])/180*π
+const thelat = parse(Float64,pacons[20])/180*π
+const thelon = parse(Float64,pacons[21])/180*π
 const chroot = parse(Float64,pacons[22])
 # ---文本读入完成---
 
