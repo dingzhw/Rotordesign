@@ -1,13 +1,13 @@
 # The file test the uniform inflow condition
 
-include("const.jl")
-include("mathfunctions.jl")
-include("flapreponse.jl")
-include("uniforminflow.jl")
-include("aoaget.jl")
-include("clcdget.jl")
-include("rotorforce.jl")
-include("trim_windtu.jl")
+include(pwd()*"\\src\\const.jl")
+include(pwd()*"\\src\\mathfunctions.jl")
+include(pwd()*"\\src\\flapreponse.jl")
+include(pwd()*"\\src\\uniforminflow.jl")
+include(pwd()*"\\src\\aoaget.jl")
+include(pwd()*"\\src\\clcdget.jl")
+include(pwd()*"\\src\\rotorforce.jl")
+include(pwd()*"\\src\\trim_windtu.jl")
 
 tic() # 程序起始标志
 print("===计算初始化===")

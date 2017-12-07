@@ -26,8 +26,8 @@ const chroot = 0.06 # 桨根弦长
 =#
 
 # ---文本读入---
-parafile = open("parameters","r")
-paralines = readline(parafile)
+parafile = open("src\\parameters","r")
+paralines = readlines(parafile)
 close(parafile)
 pacons = Array{String}(length(paralines))
 for i in 1:length(paralines)

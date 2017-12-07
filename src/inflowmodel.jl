@@ -1,10 +1,10 @@
 # 入流模型选择器函数
 
-include("uniforminflow.jl")
-include("dynamicinflow.jl")
-include("rigidwake.jl")
-include("freewake.jl")
-include("vpm.jl")
+include("src\\uniforminflow.jl")
+include("src\\dynamicinflow.jl")
+include("src\\rigidwake.jl")
+include("src\\freewake.jl")
+include("src\\vpm.jl")
 
 function inflow(x,judge="均匀入流") # 这是一个入流模型选择器函数
     # 通过改变judge的值来选择不同的入流模型
@@ -23,4 +23,4 @@ function inflow(x,judge="均匀入流") # 这是一个入流模型选择器函�
         print("错误！无法理解输入的模型，请检查输入是否有误")
         return false
     end
-end 
+end
