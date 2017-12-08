@@ -52,13 +52,14 @@ const dpsideg = parse(Float64,pacons[15])
 const βang0 = parse(Float64,pacons[16])/180*π
 const dβ0 = parse(Float64,pacons[17])/180*π
 const θ7 = parse(Float64,pacons[18])/180*π
-const θtw = parse(Float64,pacons[19])/180*π
+# const θtw = parse(Float64,pacons[19])/180*π
 const thelat = parse(Float64,pacons[20])/180*π
 const thelon = parse(Float64,pacons[21])/180*π
-const chroot = parse(Float64,pacons[22])
+# const chroot = parse(Float64,pacons[22])
 # ---文本读入完成---
 
 # ---
+const taper = 1.0   # 桨叶尖削比
 const Iβ = m_/3*(R-ecut*R)^3  #桨叶挥舞惯量 量纲kg*m^2
 const v_air = [vair*cos(αs),0.0,vair*sin(αs)] #forward wind speed  量纲m/s
 const μ_air = v_air[1]/(Ω*R)  #来流在桨盘edgewise方向分量  无量纲
@@ -71,14 +72,16 @@ const dψ = dpsideg*π/180 #方位角步进步长 (量纲为rad)
 const npsi = 360/dpsideg # 周向分割步数
 # ---
 
-ch = Array{Float64}(NR,Nbe) #桨叶弦长
+# ---
+# ch = Array{Float64}(NR,Nbe) #桨叶弦长
 rb = Array{Float64}(NR,Nbe)  #桨叶叶素点分段径向长度值
 dr = Array{Float64}(NR,Nbe)  #桨叶叶素分段长度值
 
 for k in 1:NR
   for i in 1:Nbe
-    ch[k,i] = chroot
+    # ch[k,i] = chroot*taper*(i-1)/Nbe
     dr[k,i] = R/Nbe
     rb[k,i] = R/Nbe*(i-1)+dr[k,i]/2
   end
 end
+# ---
