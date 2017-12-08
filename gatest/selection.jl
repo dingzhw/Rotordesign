@@ -11,7 +11,7 @@ function selection(ncre,npare,x2ro::Array)
     minro = x2ro[indmin(rotmp)]
     for j in 1:npare
         patmp[j] = x2ro[indmin(rotmp)]
-        splice!(rotmp,minimum(rotmp))
+        deleteat!(rotmp,indmin(rotmp))
     end
 
     return patmp,minpower,avepower,minro

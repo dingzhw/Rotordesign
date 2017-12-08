@@ -1,6 +1,6 @@
 # The file test the uniform inflow condition
 
-include(pwd()*"\\gatest\\creatures.jl")
+# include(pwd()*"\\gatest\\creatures.jl")
 include(pwd()*"\\src\\const.jl")
 include(pwd()*"\\src\\mathfunctions.jl")
 include(pwd()*"\\src\\flapreponse.jl")
@@ -10,8 +10,8 @@ include(pwd()*"\\src\\clcdget.jl")
 include(pwd()*"\\src\\rotorforce.jl")
 include(pwd()*"\\src\\trim_windtu.jl")
 
-tic() # 程序起始标志
-print("===计算初始化===")
+# tic() # 程序起始标志
+# print("===计算初始化===")
 
 function uitest(x2ro::Rotor,judge=false)
 
@@ -57,13 +57,15 @@ function uitest(x2ro::Rotor,judge=false)
     MQ = 0.0
     uitmp = uniforminflow(ψ,θcp,θlat,θlon,betanow,betaxnow)
 
-    while index<=100*npsi # 如果计算了100圈还没收敛就结束计算
+    while index<=10*npsi # 如果计算了100圈还没收敛就结束计算
       vind_r = uitmp[1]
       vall_r = uitmp[2]
       beta = uitmp[4]
-      if index%npsi==0
-        print("===当前挥舞角$(beta/π*180)°===\n")
-      end
+
+    #   if index%npsi==0
+    #     print("===当前挥舞角$(beta/π*180)°===\n")
+    #   end
+
       dbeta = uitmp[5]
       blat = blat+uitmp[4]*sin(ψ)
       blon = blon+uitmp[4]*cos(ψ)
@@ -79,16 +81,18 @@ function uitest(x2ro::Rotor,judge=false)
       Cd = clcdtmp[2]
 
       # This file calculate the whole aerodynamic force of the rotor in the hub
-      global rftmp = rotorforce(ψ,vall_r,α_aero,θ,Cl,Cd)
+      rftmp = rotorforce(ψ,vall_r,α_aero,θ,Cl,Cd)
       rot = rot+rftmp[3]
       MQ = MQ+rftmp[4]
       Mbeta_aero = rftmp[5][1]
+
       # if index%npsi==0
       #   print("===当前挥舞力矩：$(Mbeta_aero)N·m===\n")
       # end
       # print("$(θ/π*180)\n")
       # print("$(α_aero/π*180)\n")
       # print("\n")
+
       # The file calculate the uniform induced velocity
       uitmp = uniforminflow(ψ,θcp,θlat,θlon,beta,dbeta,Mbeta_aero)
 
@@ -97,7 +101,10 @@ function uitest(x2ro::Rotor,judge=false)
       # 此处要输入转过一周进行配平的条件，今天来不及了明天完成，作此标志 12/2/2017
       if index%npsi==0
         rot = rot/npsi
-        print("===当前拉力：$(rot)N===\n")
+
+        # print("===当前拉力：$(rot)N===\n")
+        # print("===当前旋翼功率：$(-MQ)W===\n")
+
         beta_lat = blat/npsi
         beta_lon = blon/npsi
 
@@ -109,15 +116,18 @@ function uitest(x2ro::Rotor,judge=false)
         # 此处开始进行配平
         global trimtmp = trimwt(uitmp,rot,beta_lat,beta_lon,θcp,θlat,θlon)
         if trimtmp[1]
-          # print(trimtmp)
-          print("配平总距：$(trimtmp[5]*180/π)\n")
-          print("配平横向变距：$(trimtmp[3]*180/π)\n")
-          print("配平纵向变距：$(trimtmp[4]*180/π)\n")
+
+        #   print("配平总距：$(trimtmp[5]*180/π)\n")
+        #   print("配平横向变距：$(trimtmp[3]*180/π)\n")
+        #   print("配平纵向变距：$(trimtmp[4]*180/π)\n")
+
           break
         else
           θcp = trimtmp[5]
           θ0 = trimtmp[2]
-          print("配平总距：$(trimtmp[5]*180/π)\n")
+
+        #   print("配平总距：$(trimtmp[5]*180/π)\n")
+
           θlat = trimtmp[3]
           θlon = trimtmp[4]
           rot = 0.0
@@ -130,12 +140,17 @@ function uitest(x2ro::Rotor,judge=false)
       index = index+1
     end
 
-    return rftmp,trimtmp
+    if index==10*npsi
+        return abs(MQ*100)
+    else
+        return -MQ
+    end
 end
 
-x2ro = initcre()[1]
-uitest(x2ro)
-
-print("===计算收敛===\n")
-print("===总计算步数$(index-1)===\n")
-toc() # 程序结束
+# x2ro = initcre()[1]
+# power = uitest(x2ro)
+#
+# print("===计算收敛===\n")
+# print("===配平旋翼功率为：$(power)W===\n")
+# print("===总计算步数$(index)===\n")
+# toc() # 程序结束
