@@ -1,20 +1,11 @@
 # 本脚本用于生成旋翼实例
 
-
-
-# ---
-const ncre = 100
-const npare = Int(ncre/10)
-const nchil = ncre-npare
-const mutrate = 0.02
-# ---
-
 type Ropara # 旋翼参数类型
     v::Float64
     min::Float64
     max::Float64
 
-    Ropara(v,min,max) = new(min+(max-min)*rand(),min,max)
+    Ropara(v,min,max) = v==0.0 ? new(min+(max-min)*rand(),min,max) : new(v,min,max)
 end
 
 type Rotor # 旋翼实例类型
@@ -24,7 +15,8 @@ type Rotor # 旋翼实例类型
     fitness         # 适应函数
 end
 
-include(pwd()*"\\uitest\\uitest.jl")
+# include(pwd()*"\\uitest\\uitest.jl")
+include(pwd()*"\\src\\solfunctions.jl")
 
 # 适应函数--->配平后返回旋翼总功率
 function fitness(ro::Rotor)

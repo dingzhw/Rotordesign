@@ -102,7 +102,6 @@ end
 
 # 矢量夹角函数
 function aoaang(vec_,x_=[1,0]) # 二维坐标系下，任意矢量与x轴夹角(-180deg~180deg)
-#  x_ = [1,0]
   if vec_[2]>=x_[2] # 判断矢量与x轴夹角方向
     return -acos(dot(vec_,x_)/(norm(vec_)*norm(x_)))
   else

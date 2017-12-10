@@ -22,7 +22,7 @@ function beforce(vall_r,chord,Cl,Cd,α_aero,θ,dr,beta=0.0)
   return Fbez,Fbey
 end
 
-function rotorforce(ψ,vall_r,α_aero,θ,Cl,Cd,filename=pwd()*"\\force_record\\fhub.txt")
+function rotorforce(ψ,ch,rb,vall_r,α_aero,θ,Cl,Cd,filename=pwd()*"\\force_record\\fhub.txt")
   # filebf = open(filename,"w")
   # write(filebf,"List  ZForce  YForce\n")
 

@@ -1,7 +1,7 @@
 # The file calculate the uniform induced velocity
 # 给出均匀入流模型
 
-function uniforminflow(ψ,θcp,θlat,θlon,betanow,betaxnow,Mbeta_aero=0.0)
+function uniforminflow(ψ,rb,θcp,θlat,θlon,betanow,betaxnow,Mbeta_aero=0.0)
   vind_s = [0.0,0.0,-T/(2*ρ*A*norm(v_air))] # 固定坐标系诱导速度初值
   vall_s = v_air + vind_s # 固定坐标系总的滑流速度初值
   # lmdaui = -T/(2*ρ*A*norm(vall_s))/(Ω*R) # 前飞均匀诱导速度系数
