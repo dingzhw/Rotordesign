@@ -9,10 +9,13 @@ type Ropara # 旋翼参数类型
 end
 
 type Rotor # 旋翼实例类型
-    chroot::Ropara  # 桨根弦长
-    taper::Ropara   # 桨叶尖削
-    twist::Ropara   # 桨叶扭转角
-    fitness         # 适应函数
+    chroot::Ropara      # 桨根弦长
+    taper::Ropara       # 桨叶尖削
+    taperr::Ropara      # 尖削起始位置
+    twist1::Ropara      # 桨叶根段扭度
+    twist2::Ropara      # 桨叶尖段扭度
+    twistr::Ropara      # 扭转分割点
+    fitness::Function   # 适应函数
 end
 
 # include(pwd()*"\\uitest\\uitest.jl")
@@ -37,8 +40,11 @@ function initcre()
     while true
         chroot = Ropara(0.0,0.05,0.10)
         taper  = Ropara(0.0,0.6,1.0)
-        twist  = Ropara(0.0,-20.0/180*π,-5.0/180*π)
-        x2ro[icre] = Rotor(chroot,taper,twist,fitness)
+        taperr = Ropara(0.0,0.1*R,0.9*R)
+        twist1 = Ropara(0.0,-20.0/180*π,5.0/180*π)
+        twist2 = Ropara(0.0,-20.0/180*π,5.0/180*π)
+        twistr = Ropara(0.0,0.1*R,0.8*R)
+        x2ro[icre] = Rotor(chroot,taper,taperr,twist1,twist2,twistr,fitness)
         if constraint(x2ro[icre])
             icre = icre+1
         end

@@ -11,7 +11,10 @@ function uitest(x2ro::Rotor,judge=false)
 
     chroot = x2ro.chroot.v
     taper = x2ro.taper.v
-    θtw = x2ro.twist.v
+    taperr = x2ro.taperr.v
+    twist1 = x2ro.twist1.v
+    twist2 = x2ro.twist2.v
+    twistr = x2ro.twistr.v
 
     # ---
     ch = Array{Float64}(NR,Nbe) #桨叶弦长
@@ -39,7 +42,7 @@ function uitest(x2ro::Rotor,judge=false)
       θlat[k] = thelat
       θlon[k] = thelon
       for i in 1:Nbe
-        θ0[k,i] = θcp[k]+θtw*(rb[k,i]/R-0.7)
+        θ0[k,i] = rb[i]<=twistr ? θcp[k]+twist1*(rb[k,i]/twistr-1) : θcp[k]+twist2*((rb[k,i]-twistr)/(R-twistr))
       end
     end
     index = 1
@@ -108,7 +111,7 @@ function uitest(x2ro::Rotor,judge=false)
         ψ = 0.0
 
         # 此处开始进行配平
-        trimtmp = trimwt(uitmp,ch,rb,rot,beta_lat,beta_lon,θcp,θtw,θlat,θlon)
+        trimtmp = trimwt(uitmp,ch,rb,rot,beta_lat,beta_lon,θ0,θcp,twist1,twist2,twistr,θlat,θlon)
         if trimtmp[1]
 
         #   print("配平总距：$(trimtmp[5]*180/π)\n")
