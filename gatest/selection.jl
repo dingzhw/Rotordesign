@@ -1,6 +1,6 @@
 # 本脚本用于进行个体选择
 
-function selection(ncre,npare,x2ro::Array)
+@everywhere function selection(ncre,npare,x2ro::Array)
     rotmp = Array{Float64}(ncre)
     patmp = Array{Rotor}(npare)
     for i in 1:ncre

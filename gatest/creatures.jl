@@ -1,15 +1,18 @@
 # 本脚本用于生成旋翼实例
 
 # ---
-const npara = 3
-const ncre = 100
-const npare = Int(ncre/10)
+const npara = 6
+const ncre = 64
+const npare = Int(ncre/8)
 const nchil = ncre-npare
 const mutrate = 0.05
-const ngen = Int(ncre*npara) # 最高演化代数
+const ngen = Int(ncre*npara) # 最高进化代数
+const nstallgen = Int(npara*npare)  # 最低进化代数
+const ncore = Int(ncre/4) # 每个核心所需计算的个体数量
+const ncorepare = Int(npare/4) # 每个核心所需计算的父辈的数量
 # ---
 
-type Ropara # 旋翼参数类型
+@everywhere type Ropara # 旋翼参数类型
     v::Float64
     min::Float64
     max::Float64
@@ -17,7 +20,7 @@ type Ropara # 旋翼参数类型
     Ropara(v,min,max) = v==0.0 ? new(min+(max-min)*rand(),min,max) : new(v,min,max)
 end
 
-type Rotor # 旋翼实例类型
+@everywhere type Rotor # 旋翼实例类型
     chroot::Ropara      # 桨根弦长
     taper::Ropara       # 桨叶尖削
     taperr::Ropara      # 尖削起始位置
@@ -28,10 +31,10 @@ type Rotor # 旋翼实例类型
 end
 
 # include(pwd()*"\\uitest\\uitest.jl")
-include(pwd()*"\\src\\solfunctions.jl")
+@everywhere include(pwd()*"\\src\\solfunctions.jl")
 
 # 适应函数--->配平后返回旋翼总功率
-function fitness(ro::Rotor)
+@everywhere function fitness(ro::Rotor)
     uitmp = uitest(ro)
     return uitmp
 end
