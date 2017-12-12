@@ -1,6 +1,7 @@
 # This file is to get the Cl and Cd of Blade Element
 
 
+
 #the excel interpolation method
 function cla(α,ma)
   # NACA0012
@@ -76,6 +77,18 @@ function dragcoffi(α,Ma)
   return Cd
 end
 
+# ---Julia Interpolations插值生成方法---
+function clinp(α,Ma)
+    index = Float64(1+(α/π*180-clitp[1,1])/dcl)
+    return clitp[index,2]
+end
+
+function cdinp(α,Ma)
+    index = Float64(1+(α/π*180-cditp[1,1])/dcd)
+    return cditp[index,2]
+end
+# ---Julia Interpolations Generation Succeed---
+
 function clcdget(α_aero,vall_r)
   Ma = Array{Float64}(NR,Nbe)
   for k in 1:NR #take Mach Number into consideration
@@ -87,8 +100,8 @@ function clcdget(α_aero,vall_r)
   cdrag = Array{Float64}(NR,Nbe)
   for k in 1:NR #solve the local clcd
     for i in 1:Nbe
-      clift[k,i] = cla(α_aero[k,i],Ma[k,i])
-      cdrag[k,i] = dragcoffi(α_aero[k,i],Ma[k,i])
+      clift[k,i] = clinp(α_aero[k,i],Ma[k,i])
+      cdrag[k,i] = cdinp(α_aero[k,i],Ma[k,i])
     end
   end
   return clift,cdrag,Ma

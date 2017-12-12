@@ -1,5 +1,14 @@
 # 本脚本用于生成旋翼实例
 
+# ---
+const npara = 3
+const ncre = 100
+const npare = Int(ncre/10)
+const nchil = ncre-npare
+const mutrate = 0.05
+const ngen = Int(ncre*npara) # 最高演化代数
+# ---
+
 type Ropara # 旋翼参数类型
     v::Float64
     min::Float64

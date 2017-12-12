@@ -26,7 +26,7 @@ const chroot = 0.06 # 桨根弦长
 =#
 
 # ---文本读入---
-parafile = open("src\\parameters","r")
+parafile = open("input\\parameters","r")
 paralines = readlines(parafile)
 close(parafile)
 pacons = Array{String}(length(paralines))
@@ -56,6 +56,7 @@ const θ7 = parse(Float64,pacons[18])/180*π
 const thelat = parse(Float64,pacons[20])/180*π
 const thelon = parse(Float64,pacons[21])/180*π
 # const chroot = parse(Float64,pacons[22])
+const cbe = parse(Float64,pacons[23])
 # ---文本读入完成---
 
 # ---
@@ -74,14 +75,48 @@ const npsi = 360/dpsideg # 周向分割步数
 
 # ---
 # ch = Array{Float64}(NR,Nbe) #桨叶弦长
-rb = Array{Float64}(NR,Nbe)  #桨叶叶素点分段径向长度值
-dr = Array{Float64}(NR,Nbe)  #桨叶叶素分段长度值
-
-for k in 1:NR
-  for i in 1:Nbe
-    # ch[k,i] = chroot*taper*(i-1)/Nbe
-    dr[k,i] = R/Nbe
-    rb[k,i] = R/Nbe*(i-1)+dr[k,i]/2
-  end
-end
+# rb = Array{Float64}(NR,Nbe)  #桨叶叶素点分段径向长度值
+# dr = Array{Float64}(NR,Nbe)  #桨叶叶素分段长度值
+#
+# for k in 1:NR
+#   for i in 1:Nbe
+#     # ch[k,i] = chroot*taper*(i-1)/Nbe
+#     dr[k,i] = R/Nbe
+#     rb[k,i] = R/Nbe*(i-1)+dr[k,i]/2
+#   end
+# end
 # ---
+
+# ---升阻力特性文本读入&插值函数生成---
+using Interpolations
+
+function readclcd(filename=pwd()*"\\input\\cx.txt")
+    # 读取升阻力特性文档并生成插值函数
+    cxlines = open(readlines,filename)
+    cdstring = Array{String}(length(cxlines),2)
+    for i in 1:length(cxlines)
+        for j in 1:2
+            cdstring[i,j] = split(cxlines[i],"\t")[j]
+        end
+    end
+    cdf = Array{Float64}(length(cxlines),2)
+    for i in 1:length(cxlines)
+        cdf[i,1] = parse(Float64,cdstring[i,1])*180-180
+        cdf[i,2] = parse(Float64,cdstring[i,2])
+    end
+
+    itp = interpolate(cdf,BSpline(Constant()),OnCell())
+
+    return itp
+end
+
+# ---阻力特性插值函数生成---
+cditp = readclcd(pwd()*"\\input\\cx.txt")
+dcd = (cditp[length(cditp)/2,1]-cditp[1,1])/(length(cditp)/2-1)
+# ---升力特性插值函数生成---
+clitp = readclcd(pwd()*"\\input\\cy.txt")
+dcl = (clitp[length(clitp)/2,1]-clitp[1,1])/(length(clitp)/2-1)
+
+# ---升阻力系数插值函数生成完毕---
+
+# 备注：注意ITP的Length，他的Length是所有元素总和

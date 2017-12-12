@@ -24,8 +24,10 @@ function uitest(x2ro::Rotor,judge=false)
     for k in 1:NR
       for i in 1:Nbe
         ch[k,i] = chroot*taper*(i-1)/Nbe
-        dr[k,i] = R/Nbe
-        rb[k,i] = R/Nbe*(i-1)+dr[k,i]/2
+        # Sin分段法划分桨叶分段节点，通过cbe调节分段细致程度
+        # cbe越大，桨尖越密
+        dr[k,i] = R*(1-ecut)*(sin(i/Nbe*cbe*π/2)-sin((i-1)/Nbe*cbe*π/2))/sin(cbe*π/2)
+        rb[k,i] = ecut*R+R*(1-ecut)*(sin(i/Nbe*cbe*π/2)+sin((i-1)/Nbe*cbe*π/2))/sin(cbe*π/2)/2
       end
     end
     # ---
@@ -78,7 +80,7 @@ function uitest(x2ro::Rotor,judge=false)
       Cd = clcdtmp[2]
 
       # This file calculate the whole aerodynamic force of the rotor in the hub
-      rftmp = rotorforce(ψ,ch,rb,vall_r,α_aero,θ,Cl,Cd)
+      rftmp = rotorforce(ψ,ch,rb,dr,vall_r,α_aero,θ,Cl,Cd)
       rot = rot+rftmp[3]
       MQ = MQ+rftmp[4]
       Mbeta_aero = rftmp[5][1]
@@ -111,7 +113,7 @@ function uitest(x2ro::Rotor,judge=false)
         ψ = 0.0
 
         # 此处开始进行配平
-        trimtmp = trimwt(uitmp,ch,rb,rot,beta_lat,beta_lon,θ0,θcp,twist1,twist2,twistr,θlat,θlon)
+        trimtmp = trimwt(uitmp,ch,rb,dr,rot,beta_lat,beta_lon,θ0,θcp,twist1,twist2,twistr,θlat,θlon)
         if trimtmp[1]
 
         #   print("配平总距：$(trimtmp[5]*180/π)\n")
