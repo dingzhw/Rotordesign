@@ -1,7 +1,8 @@
 # This file solve the flap reponses of blades
-function sflapre(ψ,λ_α,θ_cp,θ_lat,θ_lon) #staticflapre
+@everywhere function sflapre(ψ,λ_α,θ_cp,θ_lat,θ_lon) #staticflapre
   # 其中θ应当输入平均值，例如mean(θ_cp)
-  γ_ = 13.0 #(ρ*5.73*(0.35)*R^4)/Iβ
+  γ_ = (ρ*8.59*(0.06)*R^4)/Iβ
+
   μ = μ_air
   F0 = 1+μ^2/2
   F_B1 = μ
@@ -14,7 +15,7 @@ function sflapre(ψ,λ_α,θ_cp,θ_lat,θ_lon) #staticflapre
   B_A1 = 1+μ^2/4
   B_b1 = 1+μ^2/4
   γ_B = γ_/2*B_β0/B_b1
-  θ0_ = θcp[1]
+  θ0_ = θ_cp[1]
   θ_lat_ = θ_lat[1]
   θ_lon_ = θ_lon[1]
   Matrix_β = [γ_/2*F0 0 γ_/2*F_B1 γ_/2*F_λ;
@@ -23,45 +24,56 @@ function sflapre(ψ,λ_α,θ_cp,θ_lat,θ_lon) #staticflapre
   β0 = Matrix_β[1]
   β_lon = Matrix_β[2]
   β_lat = Matrix_β[3]
+
+  # # ---new staticflapre
+  # θ0 = θ_cp[1]
+  # B1 = θ_lon[1]
+  # A1 = θ_lat[2]
+  # μ = μ_air
+  # β0 = 3/8*γ_*CT/(8.59*0.0386)-3/2*g*R/(Ω*R)^2
+  # β_lon = 2*μ/(1-0.5*μ^2)*(4/3*θ0+μ*αs-λ_α)-(1+3/2*μ^2)/(1-1/2*μ^2)*B1
+  # β_lat = 1/(1+1/2*μ^2)*(4/3*μ*β0+λ_α)+A1
+  # # ---Completed---
+
   β = β0-β_lon*cos(ψ)-β_lat*sin(ψ)
   dβ = Ω*(β_lon*sin(ψ)-β_lat*cos(ψ))
-  ddβ = Ω*(β_lon*cos(ψ)+β_lat*cos(ψ))
+  ddβ = Ω^2*(β_lon*cos(ψ)+β_lat*cos(ψ))
   return β,dβ,ddβ,β_lon,β_lat
 end
 
-function dflapre(betanow,betaxnow,Mbeta_aero)	#动态挥舞响应
-  # 输入：当前挥舞角、挥舞角速度
-  # 输出：步进挥舞角、挥舞角速度
-	# 常规参数
-	Mcen = ecut*R*Ω^2*m_*1/2*(R-ecut*R)^2
+@everywhere function dflapre(betanow,betaxnow,Mbeta_aero)	#动态挥舞响应
+    # 输入：当前挥舞角、挥舞角速度
+    # 输出：步进挥舞角、挥舞角速度
+    # 常规参数
+    Mcen = ecut*R*Ω^2*m_*1/2*(R-ecut*R)^2
 	MG = m_*g*1/2*(R-ecut*R)^2
-  nite = 10 # 迭代步数
-  h = dψ/nite # 龙格库塔求解间隔
-  ite = 1
-  betanext = 0.0
-  betaxnext = 0.0
+    nite = 10 # 迭代步数
+    h = dψ/nite # 龙格库塔求解间隔
+    ite = 1
+    betanext = 0.0
+    betaxnext = 0.0
 
-	# 挥舞方程
-	funcbetax(xxbeta) = 1/(Iβ*Ω^2)*(Mbeta_aero-MG*cos(xxbeta)-
-											Mcen*sin(xxbeta))-
-											cos(xxbeta)*sin(xxbeta)
+    # 挥舞方程
+    funcbetax(xxbeta) = 1/(Iβ*Ω^2)*(Mbeta_aero-MG*cos(xxbeta)-
+    										Mcen*sin(xxbeta))-
+    										cos(xxbeta)*sin(xxbeta)
 
-	# 龙格库塔求解
-  while ite<=nite
-  	k1 = betaxnow
-  	kx1 = funcbetax(betanow)
-  	k2 = betaxnow+h/2*k1
-  	kx2 = funcbetax(betanow+h/2*kx1)
-  	k3 = betaxnow+h/2*k2
-  	kx3 = funcbetax(betanow+h/2*kx2)
-  	k4 = betaxnow+h*k3
-  	kx4 = funcbetax(betanow+h*kx3)
-  	betanext = betanow + h/6*(k1+2*k2+2*k3+k4)
-  	betaxnext = betaxnow + h/6*(kx1+2*kx2+2*kx3+kx4)
+    # 龙格库塔求解
+    while ite<=nite
+    	k1 = betaxnow
+    	kx1 = funcbetax(betanow)
+    	k2 = betaxnow+h/2*k1
+    	kx2 = funcbetax(betanow+h/2*kx1)
+    	k3 = betaxnow+h/2*k2
+    	kx3 = funcbetax(betanow+h/2*kx2)
+    	k4 = betaxnow+h*k3
+    	kx4 = funcbetax(betanow+h*kx3)
+    	betanext = betanow + h/6*(k1+2*k2+2*k3+k4)
+    	betaxnext = betaxnow + h/6*(kx1+2*kx2+2*kx3+kx4)
     betanow = betanext
     betaxnow = betaxnext
     ite = ite+1
-  end
+    end
 
-	return betanext,betaxnext
+    return betanext,betaxnext
 end

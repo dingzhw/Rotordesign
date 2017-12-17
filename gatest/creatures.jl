@@ -5,7 +5,7 @@ const npara = 6
 const ncre = 64
 const npare = Int(ncre/8)
 const nchil = ncre-npare
-const mutrate = 0.05
+const mutrate = 0.5
 const ngen = Int(ncre*npara) # 最高进化代数
 const nstallgen = Int(npara*npare)  # 最低进化代数
 const ncore = Int(ncre/4) # 每个核心所需计算的个体数量
@@ -36,7 +36,11 @@ end
 # 适应函数--->配平后返回旋翼总功率
 @everywhere function fitness(ro::Rotor)
     uitmp = uitest(ro)
-    return uitmp
+    if uitmp[1]&&uitmp[2]<8000
+        return uitmp[2]
+    else
+        return 8000*(1+0.5*rand())
+    end
 end
 
 # 约束函数--->满足约束条件返回true，否则返回false
@@ -50,7 +54,7 @@ function initcre()
     x2ro = Array{Rotor}(ncre)
     icre = 1
     while true
-        chroot = Ropara(0.0,0.05,0.10)
+        chroot = Ropara(0.0,0.06,0.07)
         taper  = Ropara(0.0,0.6,1.0)
         taperr = Ropara(0.0,0.1*R,0.9*R)
         twist1 = Ropara(0.0,-20.0/180*π,5.0/180*π)

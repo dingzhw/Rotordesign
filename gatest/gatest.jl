@@ -1,8 +1,7 @@
 # 本脚本用于运行GA代码
 
 addprocs(3)
-using Plots
-gr()
+using Plots;gr()
 
 include(pwd()*"\\gatest\\creatures.jl")
 include(pwd()*"\\gatest\\crossovermutation.jl")
@@ -11,7 +10,7 @@ include(pwd()*"\\gatest\\selection.jl")
 tic() # 计算开始时间
 tstart = time()
 
-gafile = open(pwd()*"\\output\\ga.log","w")
+gafile = open(pwd()*"\\output\\ga_2.18.100_oaf10277.log","w")
 gen = 1
 minpower = zeros(Float64,ngen)
 avepower = zeros(Float64,ngen)
@@ -20,27 +19,30 @@ print("===初始化随机旋翼实例===\n")
 write(gafile,"===初始化随机旋翼实例===\n")
 x2ro = initcre()
 while gen<=ngen
+    # 求解适应函数的过程使用并行运算
     # ---Parallel Computating Solution 1---
-    sel1 = remotecall(selection,1,ncore,ncorepare,x2ro[1:ncore])
-    sel2 = remotecall(selection,2,ncore,ncorepare,x2ro[ncore+1:2*ncore])
-    sel3 = remotecall(selection,3,ncore,ncorepare,x2ro[2*ncore+1:3*ncore])
-    sel4 = remotecall(selection,4,ncore,ncorepare,x2ro[3*ncore+1:4*ncore])
+    sel1 = remotecall(solfit,1,ncore,x2ro[1:ncore])
+    sel2 = remotecall(solfit,2,ncore,x2ro[ncore+1:2*ncore])
+    sel3 = remotecall(solfit,3,ncore,x2ro[2*ncore+1:3*ncore])
+    sel4 = remotecall(solfit,4,ncore,x2ro[3*ncore+1:4*ncore])
     seltmp1 = fetch(sel1)
     seltmp2 = fetch(sel2)
     seltmp3 = fetch(sel3)
     seltmp4 = fetch(sel4)
-    # seltmp = vcat(seltmp1,seltmp2,seltmp3,seltmp4)
+    rotmp = vcat(seltmp1,seltmp2,seltmp3,seltmp4)
     # ---Solution 1 Completed---
 
-    # seltmp = selection(ncre,npare,x2ro)   # 不进行并行计算的方式
+    seltmp = selection(npare,rotmp,x2ro)   # 选择过程不进行并行计算
 
-    x2ro_pa     =   vcat(seltmp1[1],seltmp2[1],seltmp3[1],seltmp4[1])
-    mintmp      =   vcat(seltmp1[2],seltmp2[2],seltmp3[2],seltmp4[2])
-    meantmp     =   vcat(seltmp1[3],seltmp2[3],seltmp3[3],seltmp4[3])
-    minrotmp    =   vcat(seltmp1[4],seltmp2[4],seltmp3[4],seltmp4[4])
-    minpower[gen] = minimum(mintmp)
-    avepower[gen] = mean(meantmp)
-    minro[gen] = minrotmp[indmin(mintmp)]
+    # x2ro_pa     =   vcat(seltmp1[1],seltmp2[1],seltmp3[1],seltmp4[1])
+    # mintmp      =   vcat(seltmp1[2],seltmp2[2],seltmp3[2],seltmp4[2])
+    # meantmp     =   vcat(seltmp1[3],seltmp2[3],seltmp3[3],seltmp4[3])
+    # minrotmp    =   vcat(seltmp1[4],seltmp2[4],seltmp3[4],seltmp4[4])
+
+    x2ro_pa       = seltmp[1]
+    minpower[gen] = seltmp[2]   # minimum(mintmp)
+    avepower[gen] = seltmp[3]   # mean(meantmp)
+    minro[gen]    = seltmp[4]   # minrotmp[indmin(mintmp)]
     x2ro_child = crossover(gen,mutrate,ngen,nchil,x2ro_pa)
     x2ro = append!(x2ro_pa,x2ro_child)
 
@@ -59,8 +61,8 @@ while gen<=ngen
             minplot[i] = minpower[i]
             aveplot[i] = avepower[i]
         end
-        powerplot = plot(x=1:gen,minplot,label="minpower",lw=5)
-        plot!(powerplot,aveplot,seriestype=:scatter,label="meanpower",title="Envolution Scolpe",lw=3)
+        powerplot = plot(x=1:gen,minplot,label="minpower",lw=6)
+        display(plot!(powerplot,aveplot,seriestype=:scatter,label="meanpower",title="Envolution Curve",lw=3))
     end
 
     # ---收敛条件---
@@ -79,8 +81,8 @@ write(gafile,"===本次进化的总时间为：$(tend-tstart)秒===")
 close(gafile)
 
 # ---输出最小功率和平均功率的记录文档---
-minfile = open(pwd()*"\\output\\minval2.log","w")
-meanfile = open(pwd()*"\\output\\meanval2.log","w")
+minfile = open(pwd()*"\\output\\minval_2.18.100_oaf10277.log","w")
+meanfile = open(pwd()*"\\output\\meanval_2.18.100_oaf10277.log","w")
 write(minfile,"---Min Power Records---\n")
 write(meanfile,"---Mean Power Records---\n")
 for i in 1:ngen

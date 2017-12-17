@@ -1,11 +1,14 @@
 # To plot the Envolution Curve
 
-# using Plots
-# gr()
+using Plots
+gr()
 # plotgen = 1
-
-powerplot = plot(x=1:ngen,minpower,label="minpower",lw=5)
-plot!(powerplot,avepower,seriestype=:scatter,label="meanpower",title="Envolution Curve",lw=3)
+for i in 1:100
+  sleep(0.2)
+  display(histogram(randn(10000)))
+end
+# powerplot = plot(x=1:ngen,minpower,label="minpower",lw=5)
+# plot!(powerplot,avepower,seriestype=:scatter,label="meanpower",title="Envolution Curve",lw=3)
 
 # while plotgen<=ngen
 #     plot(x=1:10,plotgen)

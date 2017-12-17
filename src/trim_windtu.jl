@@ -1,10 +1,10 @@
 # 这是一个风洞配平程序
 
-function uisol(uitmp,ch,rb,dr,θ7,twist1,twist2,twistr,θlat,θlon)  # 均匀入流求解力和力矩的流程
+@everywhere function uisol(uitmp,ch,rb,dr,θ7,twist1,twist2,twistr,θlat,θlon)  # 均匀入流求解力和力矩的流程
   # 用于雅可比矩阵中求平均周期力
   ψxx = 0.0
   iter = 1
-  ncir = 2 # 精度控制系数，ncir越大，圈数越多，理论上精度越高
+  ncir = 1 # 精度控制系数，ncir越大，圈数越多，理论上精度越高
   sumf = 0.0
   blat = 0.0
   blon = 0.0
@@ -47,13 +47,13 @@ function uisol(uitmp,ch,rb,dr,θ7,twist1,twist2,twistr,θlat,θlon)  # 均匀入
     iter = iter+1
   end
   sumf = sumf/ncir/npsi
-  blat = blat/ncir/npsi
-  blon = blon/ncir/npsi
+  blat = blat/ncir/npsi*2
+  blon = blon/ncir/npsi*2
 
   return sumf,blat,blon
 end
 
-function yagb(uitmp,ch,rb,dr,θcp,twist1,twist2,twistr,θlat,θlon,epsi=1/180*pi)
+@everywhere function yagb(uitmp,ch,rb,dr,θcp,twist1,twist2,twistr,θlat,θlon,epsi=1/180*pi)
   # 前向差分雅可比矩阵（待完成）
 
   # 后向差分的雅可比矩阵（待完成）
@@ -115,33 +115,33 @@ function yagb(uitmp,ch,rb,dr,θcp,twist1,twist2,twistr,θlat,θlon,epsi=1/180*pi
 
   # ===Jacobi矩阵生成===
   Myg = [dthecp  dlat  dlon;
-          dtheblat  dlatblat  dlatblon;
-          dtheblon  dlonblat  dlonblon]
+          dtheblat  dlatblat  dlonblat;
+          dtheblon  dlatblon  dlonblon]
   # ===Jacobi矩阵生成完成===
 
   return Myg
 end
 
 
-function trimwt(uitmp,ch,rb,dr,rot,beta_lat,beta_lon,
+@everywhere function trimwt(uitmp,ch,rb,dr,rot,beta_lat,beta_lon,
                 θ0,θcp,twist1,twist2,twistr,θlat,θlon,epsi=1/180*π)
-# 纵横向挥舞配平法
-  fzt = abs(rot-T) # 计算力与需用力之差
-  if fzt<10&&abs(beta_lat)<1e-3&&abs(beta_lon)<1e-3 # 配平力和挥舞
-  # if abs(beta_lat)<1e-3&abs(beta_lon)<1e-3 # 仅配平挥舞
-    return true,θ0,θlat,θlon,θcp
-  else
-    Myg = yagb(uitmp,ch,rb,dr,θcp[1],twist1,twist2,twistr,θlat,θlat,epsi) # 时变雅可比矩阵
-    dc = inv(Myg)*[T-rot,-beta_lat,-beta_lon]
-    for k = 1:NR
-      θcp[k] = θcp[k]+dc[1]
-      θlat[k] = θlat[k]+dc[2]
-      θlon[k] = θlon[k]+dc[3]
-      for i in 1:Nbe
-        θ0[k,i] = rb[i]<=twistr ? θcp[k]+twist1*(rb[k,i]/twistr-1) : θcp[k]+twist2*((rb[k,i]-twistr)/(R-twistr))
-      end
+                # 纵横向挥舞配平法
+    fzt = abs(rot-T) # 计算力与需用力之差
+    if fzt<20&&abs(beta_lat)<1e-2&&abs(beta_lon)<1e-2 # 配平力和挥舞
+    # if abs(beta_lat)<1e-3&abs(beta_lon)<1e-3 # 仅配平挥舞
+        return true,θ0,θlat,θlon,θcp
+    else
+        Myg = yagb(uitmp,ch,rb,dr,θcp[1],twist1,twist2,twistr,θlat,θlat,epsi) # 时变雅可比矩阵
+        dc = inv(Myg)*[T-rot,-beta_lat,-beta_lon]
+        for k = 1:NR
+          θcp[k] = θcp[k]+dc[1]
+          θlat[k] = θlat[k]+dc[2]
+          θlon[k] = θlon[k]+dc[3]
+          for i in 1:Nbe
+            θ0[k,i] = rb[i]<=twistr ? θcp[k]+twist1*(rb[k,i]/twistr-1) : θcp[k]+twist2*((rb[k,i]-twistr)/(R-twistr))
+          end
+        end
     end
-  end
 
-  return false,θ0,θlat,θlon,θcp
+    return false,θ0,θlat,θlon,θcp
 end

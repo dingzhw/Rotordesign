@@ -1,7 +1,7 @@
 # This file is used for get angle-of-attack
 # be carful of the coordination
 
-function aoaget(vall_r,ψ,θ0,θ_lat,θ_lon,beta=0.0)
+@everywhere function aoaget(vall_r,ψ,θ0,θ_lat,θ_lon,beta=0.0)
 #The solution is directly solving the angle between
 #pitch angle vector and wind angle vector.
 

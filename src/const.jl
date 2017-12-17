@@ -50,7 +50,7 @@ const vair = parse(Float64,pacons[13])
 const T = parse(Float64,pacons[14])
 const dpsideg = parse(Float64,pacons[15])
 const βang0 = parse(Float64,pacons[16])/180*π
-const dβ0 = parse(Float64,pacons[17])/180*π
+const dβ0 = parse(Float64,pacons[17])
 const θ7 = parse(Float64,pacons[18])/180*π
 # const θtw = parse(Float64,pacons[19])/180*π
 const thelat = parse(Float64,pacons[20])/180*π
@@ -61,7 +61,7 @@ const cbe = parse(Float64,pacons[23])
 
 # ---
 const taper = 1.0   # 桨叶尖削比
-const Iβ = m_/3*(R-ecut*R)^3  #桨叶挥舞惯量 量纲kg*m^2
+const Iβ = m_/3*R^3(1-ecut^3)  #桨叶挥舞惯量 量纲kg*m^2
 const v_air = [vair*cos(αs),0.0,vair*sin(αs)] #forward wind speed  量纲m/s
 const μ_air = v_air[1]/(Ω*R)  #来流在桨盘edgewise方向分量  无量纲
 const λ_air = v_air[3]/(Ω*R)  #来流在桨盘轴向分量  无量纲
@@ -70,7 +70,7 @@ const fnonc = ρ*A*Ω*R^2*Ω #力的无量纲化参数 量纲kg*m*s^-2
 const mnonc = ρ*A*Ω^2*R^3 #力矩的无量纲化参数 量纲kg*m^2/s^2
 const CT = T/fnonc  #无量纲重量系数
 const dψ = dpsideg*π/180 #方位角步进步长 (量纲为rad)
-const npsi = 360/dpsideg # 周向分割步数
+const npsi = Int(360/dpsideg) # 周向分割步数
 # ---
 
 # ---
@@ -111,10 +111,10 @@ function readclcd(filename=pwd()*"\\input\\cx.txt")
 end
 
 # ---阻力特性插值函数生成---
-cditp = readclcd(pwd()*"\\input\\cx.txt")
+cditp = readclcd(pwd()*"\\input\\cx_77.txt")
 dcd = (cditp[length(cditp)/2,1]-cditp[1,1])/(length(cditp)/2-1)
 # ---升力特性插值函数生成---
-clitp = readclcd(pwd()*"\\input\\cy.txt")
+clitp = readclcd(pwd()*"\\input\\cy_77.txt")
 dcl = (clitp[length(clitp)/2,1]-clitp[1,1])/(length(clitp)/2-1)
 
 # ---升阻力系数插值函数生成完毕---

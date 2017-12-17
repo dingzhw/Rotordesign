@@ -3,7 +3,7 @@
 
 
 #the excel interpolation method
-function cla(α,ma)
+@everywhere function cla(α,ma)
   # NACA0012
   x = α/π*180
   if ma<0.1
@@ -33,7 +33,7 @@ function cla(α,ma)
 end
 
 #the simple interpolation method
-function liftcoffi(α,Ma)
+@everywhere function liftcoffi(α,Ma)
   if abs(α)>(20.0*π/180.0)
     Cl = 0.0
   else
@@ -42,7 +42,7 @@ function liftcoffi(α,Ma)
   return Cl
 end
 
-function dragcoffi(α,Ma)
+@everywhere function dragcoffi(α,Ma)
   if abs(α)<(3.0*π/180.0)
     Cd = 0.0076
   elseif abs(α)<(5.0*π/180.0)
@@ -78,13 +78,13 @@ function dragcoffi(α,Ma)
 end
 
 # ---Julia Interpolations插值生成方法---
-function clinp(α,Ma)
-    index = Float64(1+(α/π*180-clitp[1,1])/dcl)
+@everywhere function clinp(α,Ma)
+    index = floor(1+(α/π*180-clitp[1,1])/dcl)
     return clitp[index,2]
 end
 
-function cdinp(α,Ma)
-    index = Float64(1+(α/π*180-cditp[1,1])/dcd)
+@everywhere function cdinp(α,Ma)
+    index = floor(1+(α/π*180-cditp[1,1])/dcd)
     return cditp[index,2]
 end
 # ---Julia Interpolations Generation Succeed---
