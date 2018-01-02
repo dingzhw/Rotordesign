@@ -32,10 +32,14 @@ end
 
 # include(pwd()*"\\uitest\\uitest.jl")
 @everywhere include(pwd()*"\\src\\solfunctions.jl")
+@everywhere include(pwd()*"\\src\\hoverfunc.jl")
 
 # 适应函数--->配平后返回旋翼总功率
 @everywhere function fitness(ro::Rotor)
-    uitmp = uitest(ro)
+    uitmpfo = uitest(ro)
+    uitmpho = uitest2hover(ro)
+    uitmp[1] = uitmpfo[1]&&uitmpho[1] ? true : false
+    uitmp[2] = 0.5*uitmpfo[2]+0.5*uitmpho[2]
     if uitmp[1]&&uitmp[2]<8000
         return uitmp[2]
     else
