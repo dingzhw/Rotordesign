@@ -38,6 +38,7 @@ end
 @everywhere function fitness(ro::Rotor)
     uitmpfo = uitest(ro)
     uitmpho = uitest2hover(ro)
+    uitmp = Array{Any}(2)
     uitmp[1] = uitmpfo[1]&&uitmpho[1] ? true : false
     uitmp[2] = 0.5*uitmpfo[2]+0.5*uitmpho[2]
     if uitmp[1]&&uitmp[2]<8000

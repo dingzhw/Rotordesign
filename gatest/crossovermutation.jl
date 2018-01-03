@@ -21,7 +21,7 @@ function crossover(gen,mutrate,ngen,nchil,pare::Array,λ=0.4)
                     twist1 = λ*pare[i].twist1.v+(1-λ)*pare[j].twist1.v
                     twist2 = λ*pare[i].twist2.v+(1-λ)*pare[j].twist2.v
                     twistr = λ*pare[i].twistr.v+(1-λ)*pare[j].twistr.v
-                    cichroot = Ropara(chroot,0.05,0.10)
+                    cichroot = Ropara(chroot,0.06,0.07)
                     citaper  = Ropara(taper,0.6,1.0)
                     citaperr = Ropara(taperr,0.1*R,0.9*R)
                     citwist1 = Ropara(twist1,-20.0/180*π,-5.0/180*π)
@@ -29,7 +29,7 @@ function crossover(gen,mutrate,ngen,nchil,pare::Array,λ=0.4)
                     citwistr = Ropara(twistr,0.1*R,0.8*R)
                     childtmp[k] = Rotor(cichroot,citaper,citaperr,citwist1,citwist2,citwistr,fitness)
                 else                # 否则随机变异
-                    chroot = Ropara(0.0,0.05,0.10)
+                    chroot = Ropara(0.0,0.06,0.07)
                     taper  = Ropara(0.0,0.6,1.0)
                     taperr = Ropara(0.0,0.1*R,0.9*R)
                     twist1 = Ropara(0.0,-20.0/180*π,5.0/180*π)
@@ -39,7 +39,7 @@ function crossover(gen,mutrate,ngen,nchil,pare::Array,λ=0.4)
                 end
                 while true  # 判断子辈是否满足约束条件，不满足则变异直到满足
                     if !constraint(childtmp[k])
-                        chroot = Ropara(0.0,0.05,0.10)
+                        chroot = Ropara(0.0,0.06,0.07)
                         taper  = Ropara(0.0,0.6,1.0)
                         taperr = Ropara(0.0,0.1*R,0.9*R)
                         twist1 = Ropara(0.0,-20.0/180*π,5.0/180*π)

@@ -10,7 +10,7 @@ include(pwd()*"\\gatest\\selection.jl")
 tic() # 计算开始时间
 tstart = time()
 
-gafile = open(pwd()*"\\output\\ga_2.18.100_oaf10277.log","w")
+gafile = open(pwd()*"\\output\\ga_multi001.log","w")
 gen = 1
 minpower = zeros(Float64,ngen)
 avepower = zeros(Float64,ngen)
@@ -81,8 +81,8 @@ write(gafile,"===本次进化的总时间为：$(tend-tstart)秒===")
 close(gafile)
 
 # ---输出最小功率和平均功率的记录文档---
-minfile = open(pwd()*"\\output\\minval_2.18.100_oaf10277.log","w")
-meanfile = open(pwd()*"\\output\\meanval_2.18.100_oaf10277.log","w")
+minfile = open(pwd()*"\\output\\minval_multi001.log","w")
+meanfile = open(pwd()*"\\output\\meanval_multi001.log","w")
 write(minfile,"---Min Power Records---\n")
 write(meanfile,"---Mean Power Records---\n")
 for i in 1:ngen
@@ -92,5 +92,9 @@ end
 close(minfile)
 close(meanfile)
 # ---输出完毕---
+
+# ---Export Png---
+png(pwd()*"\\plot\\ec_multi001")
+# ---Exported---
 
 toc() # 计算结束时间
