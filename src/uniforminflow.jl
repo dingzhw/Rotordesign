@@ -53,13 +53,13 @@
     # end
 
     for k in 1:NR
-    ψk = ψ+(k-1)*2*π/NR
-    for i in 1:Nbe
-      # 将速度从固定坐标系转为旋转坐标系
-      vinduitmp_r[k,i] = systoro(vindui_s,ψk)
-      vOmega_r = [0,-Ω*rb[k,i],0] # 旋转坐标系下旋转导致的气流分量
-      valluitmp_r[k,i] = systoro(v_air,ψk)+vinduitmp_r[k,i]+vOmega_r+vβ_r*(rb[k,i])
-    end
+        ψk = ψ+(k-1)*2*π/NR
+        for i in 1:Nbe
+          # 将速度从固定坐标系转为旋转坐标系
+          vinduitmp_r[k,i] = systoro(vindui_s,ψk)
+          vOmega_r = [0,-Ω*rb[k,i],0] # 旋转坐标系下旋转导致的气流分量
+          valluitmp_r[k,i] = systoro(v_air,ψk)+vinduitmp_r[k,i]+vOmega_r+vβ_r*(rb[k,i])
+        end
     end
 
     return vinduitmp_r,valluitmp_r,lmdaui,β,dβ,blat,blon
