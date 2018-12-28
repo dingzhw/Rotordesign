@@ -5,12 +5,12 @@ const ρ = 1.225 #空气密度 量纲kg*m^-3
 const ν = 1.46e-4 #运动黏性系数 无量纲
 const g = 9.8 #重力加速度  量纲kg*m*s^-2
 const v_sound = 343.2 #音速 量纲m/s
-const NR = 3  #桨叶片数
+const NR = 2  #桨叶片数
 const Nbe = 10 #旋翼分段数量
-const R = 1.42  #旋翼半径 量纲m
-const ecut = 0.24 #桨叶根切比例 无量纲
+const R = 1.7  #旋翼半径 量纲m
+const ecut = 0.25 #桨叶根切比例 无量纲
 const m_ = 7.8125 #桨叶质量密度 量纲kg/m
-const Ω = 142.25  #旋翼转速 量纲rad/s
+const Ω = 73.3  #旋翼转速 量纲rad/s
 const αs = -0*π/180.0  #旋翼轴倾角  量纲rad
 const Kβ = 0.0  #桨叶根部挥舞弹簧刚度 量纲？？？
 const vair = 0.1 # 来流速度 量纲 m/s
@@ -22,7 +22,7 @@ const θ7 = 2.0/180*π # 旋翼总距
 const θtw = -48.0/180*π # 桨叶扭转角
 const thelat = -0/180*π # 横向周期变距
 const thelon = 0/180*π # 纵向周期变距
-const chroot = 0.06 # 桨根弦长
+const chroot = 0.11 # 桨根弦长
 =#
 
 # ---文本读入---
